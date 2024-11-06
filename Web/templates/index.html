@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隨機顯示圖片</title>
+    <style>
+        #container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .category-card {
+            width: 300px;
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            position: relative;
+        }
+        .image-container {
+            width: 100%;
+            height: 150px;
+            background-color: #4682B4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .filename {
+            color: gray;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        button, select {
+            padding: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #FF8C00;
+            color: white;
+        }
+        select {
+            background-color: #4682B4;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>隨機顯示圖片</h1>
+
+<div id="container">
+    {% for category in categories %}
+    <div class="category-card" id="card-{{ category }}">
+        <h3>{{ category }}</h3>
+        <div class="image-container">
+            <img id="image-{{ category }}" src="" alt="顯示圖片" style="display: none;">
+            <p id="placeholder-{{ category }}">皆是固定大小內的圖片，但是不影響原有的圖片比例</p>
+        </div>
+        <p class="filename" id="filename-{{ category }}" style="display: none;">檔名</p>
+        <div class="button-container">
+            <button onclick="showRandomImage('{{ category }}')">隨機產生</button>
+            <select id="normalize-{{ category }}">
+                <option value="formal">正規化</option>
+                <option value="unformal">非正規化</option>
+            </select>
+            <select id="metric-{{ category }}">
+                <option value="pcc">PCC</option>
+                <option value="cosine">Cosine</option>
+                <option value="eu">Euclidean</option>
+            </select>
+            <button onclick="predictImage('{{ category }}')">預測</button>
+        </div>        
+    </div>
+    {% endfor %}
+</div>
+
+<div id="prediction-container"></div>
+
+
+<script>
+    function showRandomImage(category) {
+        fetch(`/random_image/${category}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                }
+                // 更新對應類別的圖片
+                const imgElement = document.getElementById(`image-${category}`);
+                const placeholderElement = document.getElementById(`placeholder-${category}`);
+                const filenameElement = document.getElementById(`filename-${category}`);
+                
+                imgElement.src = data.image_path;
+                imgElement.style.display = 'block';
+                placeholderElement.style.display = 'none';
+                
+                // 更新檔名顯示
+                filenameElement.textContent = data.filename;
+                filenameElement.style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching random image:', error));
+    }
+
+    function predictImage(category) {
+        const normalize = document.getElementById(`normalize-${category}`).value;
+        const metric = document.getElementById(`metric-${category}`).value;
+        const filename = document.getElementById(`filename-${category}`).textContent;
+        
+        // Redirect the browser to the predict_image route with the parameters
+        window.location.href = `/predict_image?category=${category}&filename=${filename}&normalize=${normalize}&metric=${metric}`;
+    }
+    
+    
+    
+    function displayPredictionResults(data) {
+        const predictionContainer = document.getElementById("prediction-container");
+        predictionContainer.innerHTML = ""; // 清空容器內容
+    
+        const randomImageElement = document.createElement("img");
+        randomImageElement.src = data.random_image_path;
+        predictionContainer.appendChild(randomImageElement);
+    
+        data.similar_images.forEach((image, index) => {
+            const imageContainer = document.createElement("div");
+    
+            const imgElement = document.createElement("img");
+            imgElement.src = image.path;
+    
+            const captionElement = document.createElement("p");
+            captionElement.textContent = `檔名: ${image.filename}, 準確度: ${image.accuracy}`;
+    
+            imageContainer.appendChild(imgElement);
+            imageContainer.appendChild(captionElement);
+            predictionContainer.appendChild(imageContainer);
+        });
+    }
+    
+</script>
+
+</body>
+</html>

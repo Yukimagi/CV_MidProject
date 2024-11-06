@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Similar Images</title>
+
+    <style>
+        #container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .category-card {
+            width: 300px;
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            position: relative;
+        }
+        .image-container {
+            width: 100%;
+            height: 150px;
+            background-color: #4682B4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .filename {
+            color: gray;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        button, select {
+            padding: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #FF8C00;
+            color: white;
+        }
+        select {
+            background-color: #4682B4;
+            color: white;
+        }
+    </style>
+    
+</head>
+<body>
+    <h1>Similar Images for {{ filename }}</h1>
+    
+    <h2>Random Image:</h2>
+    <img src="{{ random_image_path }}" alt="Random Image">
+
+    <h2>Top 10 Similar Images:</h2>
+    <div>
+        <div>
+            <h3>Accuracy: {{ similar_images[0].accuracy }}</h3>  <!-- Show accuracy just once -->
+        </div>
+        <div id="container">
+        {% for img in similar_images %}
+        <div class="category-card" id="card-{{ category }}">
+            <h3>No.{{ loop.index }} {{ img.filename }}</h3>
+            <div class="image-container">
+                <img src="{{ img.path }}" alt="{{ img.filename }}">
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
