@@ -26,12 +26,12 @@ df = pd.DataFrame(data)
 df.drop(columns=df.columns[80:336], inplace=True)
 ##########################################################################
 # # 是否正規化
-# scaler = MinMaxScaler()
-# print(df.iloc[:,:-4])
-# df.iloc[:,:-4] = pd.DataFrame(scaler.fit_transform(df.iloc[:,:-4]), columns=df.columns[:-4])
+scaler = MinMaxScaler()
+print(df.iloc[:,:-4])
+df.iloc[:,:-4] = pd.DataFrame(scaler.fit_transform(df.iloc[:,:-4]), columns=df.columns[:-4])
 #
 # # 將 DataFrame 匯出為 CSV 文件
-# df.to_csv('fnormal.txt', index=False, encoding='utf-8')
+df.to_csv('fnormal.txt', index=False, encoding='utf-8')
 ###########################################################################
 # 將 DataFrame 匯出為 CSV 文件
-df.to_csv('unformal.txt', index=False, encoding='utf-8')
+#df.to_csv('unformal.txt', index=False, encoding='utf-8')

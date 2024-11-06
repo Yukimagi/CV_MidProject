@@ -48,3 +48,15 @@ data_name.to_csv('data_name.txt', index=False, encoding='utf-8')
 # 計算總準確率
 overall_accuracy = sum(accuracies) / len(accuracies)
 print(f'總準確率: {overall_accuracy:.2%}')
+
+'''
+###正規化的準確率###
+# 將準確率寫入 txt 檔案
+with open('fnormal_accuracy.txt', 'w') as file:
+    file.write(f'總準確率: {overall_accuracy:.2%}')
+'''
+
+###非正規化的準確率###
+# 將準確率寫入 txt 檔案
+with open('unformal_accuracy.txt', 'a') as file:
+    file.write(f' euclidean_similarities 總準確率: {overall_accuracy:.2%}\n')
